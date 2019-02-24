@@ -1,0 +1,164 @@
+<attachment contenteditable="false" data-atts="%5B%5D" data-aid=".atts-e584a999-3c68-4446-a864-9703fdc2512e"></attachment><p>拖甩代码</p><pre class="ql-syntax" spellcheck="false">&lt;template&gt;
+  &lt;div class="box"&gt;
+    &lt;div class="ui-dialog" ref="dom" :style="{left:left,top:top}" @mousedown="btndown"&gt;
+      &lt;div class="ui-dialog-title"&gt;
+        登录通行证
+        &lt;a href="javascript:;" class="ui-dialog-title-closebutton" @click="closeBtn"&gt;&lt;/a&gt;
+      &lt;/div&gt;
+      &lt;div class="ui-dialog-content"&gt;
+        &lt;div class="ui-dialog-l40 ui-dialog-pt15"&gt;
+          &lt;input class="ui-dialog-input ui-dialog-input-username" type="text" value="手机/邮箱/用户名"&gt;
+        &lt;/div&gt;
+        &lt;div class="ui-dialog-l40 ui-dialog-pt15"&gt;
+          &lt;input class="ui-dialog-input ui-dialog-input-password" type="input" value="密码" /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="ui-dialog-l40"&gt;
+        &lt;a href="#"&gt;忘记密码&lt;/a&gt;
+      &lt;/div&gt;
+      &lt;!-- 登录按钮 --&gt;
+      &lt;div&gt;
+        &lt;a class="ui-dialog-submit" href="#"&gt;登录&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div v-if="show" class="ui-mask" id="mask" onslectstart="return false"&gt;&lt;/div&gt;
+    &lt;div class="link"&gt;
+      &lt;a href="javascript:;"&gt;登录&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  export default {
+    data() {
+      return {
+        left: '',
+        top: '',
+        show: false,
+        canMove: false,
+        initX: 0,
+        initY: 0,
+      }
+    },
+    mounted() {
+      this.autoCenter()
+      this.show = !this.show
+    },
+    methods: {
+      autoCenter() {
+        // 获取窗口高度宽度
+        let bodyW = document.body.clientWidth
+        let bodyH = document.body.clientHeight
+        //获取元素高度宽度
+        let elW = this.$refs.dom.offsetWidth
+        let elH = this.$refs.dom.offsetHeight       
+        this.$refs.dom.style.left = (bodyW - elW) / 2 + 'px';
+        this.$refs.dom.style.top = (bodyH - elH) / 2 + 'px'
+      },
+      btndown(e) {
+        let oDiv = e.target
+        this.initX = e.pageX - oDiv.getBoundingClientRect().left
+        this.initY = e.pageY - oDiv.getBoundingClientRect().top
+        this.canMove = true
+        document.onmousemove = e =&gt; {     
+          // 为false 停止
+          if(this.canMove === true) {
+            //鼠标当前位置
+            let mouseX = e.pageX
+            let mouseY = e.pageY
+            //新的定位距离
+            let  moveX = mouseX - this.initX
+            let  moveY = mouseY - this.initY
+
+            // 获取父元素的宽度 高度
+            let pageWidth = oDiv.parentNode.offsetWidth
+            let pageHeight = oDiv.parentNode.offsetHeight
+            // 获取窗口的宽度 高度
+            let dialogWidth = document.documentElement.clientWidth
+            let dialogHeight = document.documentElement.clientHeight
+
+            let maxX = dialogWidth - pageWidth
+            let maxY = dialogHeight - pageHeight
+
+            // 范围限定 left &gt; 0 &amp;&amp; left &lt; (页面最大宽度 - 浮层的宽度)
+            moveX = Math.min(maxX,Math.max(0, moveX)) 
+            moveY = Math.min(maxY,Math.max(0, moveY))
+            
+            this.left = moveX + 'px'
+            this.top = moveY + 'px'
+          
+          } 
+
+        }
+        document.onmouseup = e =&gt; {
+          this.canMove = false          
+        }  
+      },
+      //关闭浮层
+      closeBtn() {
+        this.show = false
+      }
+
+    }
+  }
+&lt;/script&gt;
+
+&lt;style lang='less'&gt;
+.box{
+  background: url(../assets/img/baidu_demo.png) no-repeat center #fff;
+  padding: 0;
+  margin: 0;
+  .ui-dialog{
+    width: 300px;
+    height: auto;
+    position: absolute;
+    z-index: 99;
+    top: 100px;
+    left: 100px;
+    border: 1px solid #d5d5d5;
+    &amp;-title{
+      height: 48px;
+      line-height: 48px;
+      padding-left: 20px;
+      color: #535353;
+      font-size: 16px;
+      background: #f5f5f5;
+      border-bottom: 1px solid #efefef;
+      cursor: move;
+      &amp;-closebutton{
+        width: 16px;
+        height: 16px;
+        display: block;
+        position: absolute;
+        top: 14px;
+        right: 20px;
+        background: url(../assets/img/close_def.png)
+      }
+      &amp;-closebutton:hover{
+        background: url(../assets/img/close_hov.png)
+      }
+    }
+    &amp;-content{
+      padding: 15px 20px;
+    }
+  }
+  .ui-mask{
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: .4;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 80;
+  }
+  .link{
+    text-align: right;
+    line-height: 20px;
+    padding-right: 40px;
+  }
+}
+
+&lt;/style&gt;
+
+</pre><p><br></p>
