@@ -1,0 +1,114 @@
+<attachment contenteditable="false" data-atts="%5B%5D" data-aid=".atts-1d4bee87-ae15-41a9-82dc-2d5e9b8fb08b"></attachment><p><br></p><blockquote>窗口大小自由调节</blockquote><p><br></p><pre class="ql-syntax" spellcheck="false">&lt;template&gt;
+  &lt;div class="resizeble" :style="{width: m_to_x, height: m_to_y}" ref="dom"&gt;
+    &lt;div class="resizeble-title"&gt;Resizeble panel&lt;/div&gt;
+    &lt;div class="ui-resizable-r" :style="{left: m_to_x}" @mousedown="mousedownBtn($event,'r')"&gt;&lt;p v-show="show"&gt;{{m_to_x}}&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="ui-resizable-b" :style="{top: m_to_y}" @mousedown="mousedownBtn($event,'b')"&gt;&lt;p v-show="show"&gt;{{m_to_y}}&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="ui-resizable-rb" :style="{left: m_to_x, top: m_to_y}" @mousedown="mousedownBtn($event, 'rb')"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  export default {
+    data() {
+      return {
+        show: false, // 是否显示
+        moving: false, // 鼠标是否按在控制元素上
+        m_start_x: 0, // 鼠标相对于 ctrl 的 left ,top
+        m_start_y: 0,
+        m_to_x: '', // 鼠标新的位置
+        m_to_y: '',
+        min_left: 400, // 设置最小宽度
+        min_top: 240, // 设置最小高度
+      }
+    },
+    methods: {
+      mousedownBtn(e,v) {
+        let oDiv = e.target
+        this.m_start_x = e.pageX - oDiv.getBoundingClientRect().left
+        this.m_start_y = e.pageY - oDiv.getBoundingClientRect().top
+        this.moving = true   
+        let min_left = this.min_left
+        let min_top = this.min_top
+
+        this.show = true
+        document.onmousemove = (e) =&gt; {
+          if(!this.moving) return                 
+          if('r' === v){
+            this.m_to_x = e.pageX -  this.m_start_x + 5 &gt; min_left ? e.pageX - this.m_start_x + 5 + 'px' : min_left + 'px'
+          } 
+          if('b' === v) {
+            this.m_to_y = e.pageY - this.m_start_y + 5 &gt; min_top ? e.pageY - this.m_start_y + 5 + 'px' : min_top + 'px'
+          }
+          if('rb' === v) {
+            this.m_to_x = e.pageX -  this.m_start_x + 5 &gt; min_left ? e.pageX - this.m_start_x + 5 + 'px' : min_left + 'px'
+            this.m_to_y = e.pageY - this.m_start_y + 5 &gt; min_top ? e.pageY - this.m_start_y + 5 + 'px' : min_top + 'px'
+          }
+        }
+        document.onmouseup = e =&gt; {
+          this.moving = false
+          this.show = false
+        }
+      }
+    }
+  }
+&lt;/script&gt;
+
+&lt;style lang='less'&gt;
+body{
+  margin: 0;
+  padding: 50px;
+  font-size: 14px;
+  color: #333;
+}
+.resizeble{
+  width: 400px;
+  height: 240px;
+  border: 1px solid #ccc;
+  position: relative;
+  &amp;-title{
+    background-color: #eee;
+    text-align: center;
+    line-height: 30px;
+    font-weight: bold;
+    cursor: move;
+  }
+  .ui-resizable-r{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    // background-color: green;
+    // display: none;
+    cursor: e-resize; // e 是 east(东的缩写)
+    p{
+      padding-left: 10px;
+    }
+  }
+  .ui-resizable-b{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 5px;
+    // background-color: orange;
+    // display: none;
+    cursor: s-resize; // s 是 south(东的缩写)
+    p{
+      padding-top: 10px;
+    }
+  }
+  .ui-resizable-rb{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    // background-color: red;
+    // display: none;
+    cursor: nw-resize; // s 是 west(西的缩写)
+  }
+}
+&lt;/style&gt;
+
+</pre><p><br></p>
