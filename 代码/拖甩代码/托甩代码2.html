@@ -1,0 +1,163 @@
+<attachment contenteditable="false" data-atts="%5B%5D" data-aid=".atts-57185d3c-e343-4169-9106-1dd57a9301f9"></attachment><p>托甩代码2</p><pre class="ql-syntax" spellcheck="false">&lt;template&gt;
+  &lt;div class='drag-content' id="dragCon"&gt;
+    &lt;div class='project-content'&gt;
+      &lt;div class='select-item' draggable='true'
+        @dragstart="onDragstart($event,item)"
+        @dragend="onDragend(item,index)"
+        v-for="(item, index) in projectdatas" 
+        :key="item.id"&gt;
+        {{item.name}}
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class='people-content'&gt;
+      &lt;div class='drag-div' v-for="ppdt in peopledata" :key="ppdt.name"
+          @dragenter="onDragenter(ppdt)"
+          &gt;
+          &lt;div class='select-project-item'&gt;
+            &lt;label class='drag-people-label'&gt;{{ppdt.name}}:&lt;/label&gt;
+          &lt;/div&gt;
+          &lt;div class='select-item' draggable='true'
+            @dragend="onDragstart2(ppdt.selectItem,i)"
+            v-for="(item, i) in  ppdt.selectItem" :key="item.name"&gt;
+            {{item.name}}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;br&gt;
+      &lt;div  id="boxone" :class="comColor"&gt;
+        &lt;span&gt;变化颜色&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button style="margin-left:100px" @click="changeColor = !changeColor"&gt;改变&lt;/button&gt;
+      &lt;button style="margin-left:100px" @click="changeLength = !changeLength"&gt;改变2&lt;/button&gt;
+      &lt;br&gt;
+
+    &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  export default {
+    data() {
+      return {
+        projectdatas:[{
+          id:1,
+          name:'葡萄'
+          },{
+            id:2,
+            name:'芒果'
+          },{
+            id:3,
+            name:'木瓜'
+          },{
+            id:4,
+            name:'榴莲'
+        }],
+        peopledata:[{
+            id:1,
+            name:'小颖',
+            selectItem:[{name:'test'}]
+          },{
+            id:2,
+            name:'hover',
+            selectItem:[]
+          },{
+            id:3,
+            name:'空巢青年三 ',
+            selectItem:[]
+          },{
+            id:3,
+            name:'一丢丢',
+            selectItem:[]
+        }],
+        data:[],
+        target:[],
+        newdata:[],
+        changeColor: false,
+        changeLength: false,
+      }
+    },
+    computed: {
+      comColor() {
+        return {
+          changeColor: this.changeColor,
+          changeLength: this.changeLength
+        }
+      }
+    },
+    methods: {
+      // 元素开始拖动传入被拖动元素数据
+      onDragstart(e, item) {
+        this.newdata = item
+      },
+      // 进入目标元素记录数据对象
+      onDragenter(data) {
+        this.target = data
+      },
+      // 拖动结束
+      onDragend(e, i) {
+        this.target.selectItem.push(this.newdata)
+      },
+      // 行内拖动结束
+      onDragstart2(parent, i) {
+        this.target.selectItem.push(parent[i])
+        this.peopledata.selectItem = parent.splice(i,1)
+      }
+    }
+  }
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+.drag-content{
+  margin-top: 180px;
+  background: url('../../assets/img/logo.png') no-repeat center,center;
+  /* background-position: center center; */
+  /* x: left center right
+  y: top center bottom */
+  
+}
+.project-content,.people-content {
+  margin: 30px 50px;
+}
+.select-item {
+  display: inline-block;
+  text-align: center;
+  background-color: #5bc0de;
+  padding: 5px 20px;
+  margin-right: 10px;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+}
+.drag-div {
+  border: 1px solid #5bc0de;
+  margin-bottom: 10px;
+  cursor: pointer;
+  width: 600px;
+  padding: 10px;
+}
+.select-project-item {
+  display: inline-block;
+  text-align: center;
+  border-radius: 3px;
+}
+.drag-people-label{
+  padding-right:10px;
+  line-height: 28px;
+}
+#boxone{
+  margin-left: 100px;
+}
+.changeColor span{
+  color: red;
+}
+.changeLength span{
+  background: pink;
+}
+.pbox::before {
+  content: '前面'
+}
+.pbox::after {
+  content: '后面'
+}
+&lt;/style&gt;
+
+</pre><p><br></p>
