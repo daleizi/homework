@@ -1,0 +1,156 @@
+<p>拖甩加窗口自由调节</p><pre class="ql-syntax" spellcheck="false">&lt;template&gt;
+  &lt;div class="resizeableBox"&gt;
+    &lt;div class="resizeble" :style="{width: m_to_x, height: m_to_y, left:left, top:top}" ref="dom"&gt;
+      &lt;div class="resizeble-title"  @mousedown="moveBtn"&gt;Resizeble panel&lt;/div&gt;
+      &lt;div class="ui-resizable-r" :style="{left: m_to_x}" @mousedown="mousedownBtn($event,'r')"&gt;&lt;p v-show="show"&gt;{{m_to_x}}&lt;/p&gt;&lt;/div&gt;
+      &lt;div class="ui-resizable-b" :style="{top: m_to_y}" @mousedown="mousedownBtn($event,'b')"&gt;&lt;p v-show="show"&gt;{{m_to_y}}&lt;/p&gt;&lt;/div&gt;
+      &lt;div class="ui-resizable-rb" :style="{left: m_to_x, top: m_to_y}" @mousedown.prevent="mousedownBtn($event, 'rb')"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  export default {
+    data() {
+      return {
+        show: false, // 是否显示
+        movebox: false, // 整个窗口鼠标是否按在控制元素上
+        initX: 0, // 整个窗口鼠标相对于窗口的 left ,top
+        initY: 0,
+        left: '12px', // 整个窗口距离x的距离
+        top: '50px',
+        moving: false, // 边框鼠标是否按在控制元素上
+        m_start_x: 0, // 边框鼠标相对于窗口的 left ,top
+        m_start_y: 0,
+        m_to_x: '', // 边框鼠标新的位置
+        m_to_y: '', 
+        min_left: 340, // 设置最小宽度
+        min_top: 240, // 设置最小高度
+      }
+    },
+    methods: {
+      moveBtn(e) {
+        let ev = e.target
+        this.initX = e.pageX - ev.getBoundingClientRect().left
+        this.initY = e.pageY - ev.getBoundingClientRect().top
+        this.movebox = true
+        document.onmousemove = e =&gt; {
+          if(this.movebox === true) {
+            let mouseX = e.pageX
+            let mouseY = e.pageY
+            //新的定位距离
+            let  moveX = mouseX - this.initX
+            let  moveY = mouseY - this.initY
+
+            // 获取父元素的宽度 高度
+            let pageWidth = ev.parentNode.offsetWidth
+            let pageHeight = ev.parentNode.offsetHeight
+            // 获取窗口的宽度 高度
+            let dialogWidth = document.documentElement.clientWidth
+            let dialogHeight = document.documentElement.clientHeight
+
+            let maxX = dialogWidth - pageWidth
+            let maxY = dialogHeight - pageHeight
+
+            // 范围限定 left &gt; 0 &amp;&amp; left &lt; (页面最大宽度 - 浮层的宽度)
+            moveX = Math.min(maxX,Math.max(0, moveX)) 
+            moveY = Math.min(maxY,Math.max(0, moveY))
+            
+            this.left = moveX + 'px'
+            this.top = moveY + 'px'
+          }
+        }
+        document.onmouseup = e =&gt; {
+          this.movebox = false
+        }
+
+      },
+      mousedownBtn(e,v) {
+        let oDiv = e.target
+        this.m_start_x = e.pageX - oDiv.getBoundingClientRect().left
+        this.m_start_y = e.pageY - oDiv.getBoundingClientRect().top
+        this.moving = true   
+        let min_left = this.min_left
+        let min_top = this.min_top
+
+        this.show = true
+
+        document.onmousemove = (e) =&gt; {
+
+          if(this.moving === true) {   
+
+            if('r' === v){
+              this.m_to_x = e.pageX -  this.m_start_x + 5 &gt; min_left ? e.pageX - this.m_start_x + 5 + 'px' : min_left + 'px'
+            } 
+            if('b' === v) {
+              this.m_to_y = e.pageY - this.m_start_y + 5 &gt; min_top ? e.pageY - this.m_start_y + 5 + 'px' : min_top + 'px'
+            }
+            if('rb' === v) {
+              this.m_to_x = e.pageX -  this.m_start_x + 10 &gt; min_left ? e.pageX - this.m_start_x + 10 + 'px' : min_left + 'px'
+              this.m_to_y = e.pageY - this.m_start_y + 10 &gt; min_top ? e.pageY - this.m_start_y + 10 + 'px' : min_top + 'px'
+            }
+          }
+        }
+        document.onmouseup = e =&gt; {
+          this.moving = false
+          this.show = false
+        }
+      }
+    }
+  }
+&lt;/script&gt;
+
+&lt;style lang='less'&gt;
+  .resizeble{
+    width: 340px;
+    height: 240px;
+    border: 1px solid #ccc;
+    position: absolute;
+    &amp;-title{
+      background-color: #eee;
+      text-align: center;
+      line-height: 34px;
+      font-weight: bold;
+      cursor: move;
+    }
+    .ui-resizable-r{
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 5px;
+      height: 100%;
+      // background-color: green;
+      // display: none;
+      cursor: e-resize; // e 是 east(东的缩写)
+      p{
+        padding-left: 10px;
+      }
+    }
+    .ui-resizable-b{
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 5px;
+      // background-color: orange;
+      // display: none;
+      cursor: s-resize; // s 是 south(南的缩写)
+      p{
+        padding-top: 10px;
+      }
+    }
+    .ui-resizable-rb{
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      // background-color: red;
+      // display: none;
+      cursor: nw-resize; // nw 是 west(东南的缩写)
+    }
+  }
+
+&lt;/style&gt;
+
+</pre><attachment contenteditable="false" data-atts="%5B%5D" data-aid=".atts-f88a6ba2-4acf-486c-8504-e868f2a8693c"></attachment><p><br></p><p><br></p>
